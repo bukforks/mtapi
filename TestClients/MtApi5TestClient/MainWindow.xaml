@@ -166,6 +166,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0" Content="Quotes" Background="LightYellow" />
                         <ListView Grid.Row="1" Margin="2"
@@ -181,6 +182,7 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
+                        <Button Grid.Row="2" Content="Refresh Quotes" Margin="2"  Command="{Binding RefreshQuotesCommand}"/>
                     </Grid>
                 </Border>
             </Grid>

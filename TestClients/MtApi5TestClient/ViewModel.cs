@@ -162,6 +162,7 @@ namespace MtApi5TestClient
         public DelegateCommand UnlockTicksCommand { get; private set; }
 
         public DelegateCommand GetSymbolsCommand { get; private set; }
+        public DelegateCommand RefreshQuotesCommand { get; private set; }
         #endregion
 
         #region Properties
@@ -492,6 +493,7 @@ namespace MtApi5TestClient
             UnlockTicksCommand = new DelegateCommand(ExecuteUnlockTicks);
 
             GetSymbolsCommand = new DelegateCommand(ExecuteGetSymbols);
+            RefreshQuotesCommand = new DelegateCommand(ExecuteRefreshQuotes);
         }
 
         private bool CanExecuteConnect(object o)
@@ -1755,6 +1757,20 @@ namespace MtApi5TestClient
             {
                 Symbols = result;
             });
+        }
+        private async void ExecuteRefreshQuotes(object o)
+        {
+            _quotesMap.Clear();
+            Quotes.Clear();
+
+            var quotes = await Execute(() => _mtApiClient.GetQuotes());
+            if (quotes != null)
+            {
+                foreach (var quote in quotes)
+                {
+                    AddQuote(quote);
+                }
+            }
         }
 
         private static void RunOnUiThread(Action action)
