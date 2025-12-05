@@ -89,19 +89,19 @@ namespace MtClient
 
         public HashSet<int>? RequestExpertsList()
         {
-            CommandTask<object> notificationTask = new();
-            lock (notification_tasks_)
+            CommandTask<object> requestTask = new();
+            lock (service_requests_)
             {
-                notification_tasks_[MtNotificationType.ClientReady] = notificationTask;
+                service_requests_[ServiceRequestType.ExpertList] = requestTask;
             }
 
-            MtNotification notification = new(MtNotificationType.ClientReady);
-            Send(notification);
+            MtServiceRequest request = new(ServiceRequestType.ExpertList);
+            Send(request);
 
-            var response = notificationTask.WaitResponse(10000); // 10 sec
-            lock (notification_tasks_)
+            var response = requestTask.WaitResponse(10000); // 10 sec
+            lock (service_requests_)
             {
-                notification_tasks_.Remove(MtNotificationType.ClientReady);
+                service_requests_.Remove(ServiceRequestType.ExpertList);
             }
 
             return response as HashSet<int>;
@@ -277,9 +277,9 @@ namespace MtClient
         {
             logger_.Debug($"MtRpcClient.ProcessExpertList: experts count - {experts.Count}");
 
-            lock (notification_tasks_)
+            lock (service_requests_)
             {
-                if (notification_tasks_.TryGetValue(MtNotificationType.ClientReady, out CommandTask<object>? value))
+                if (service_requests_.TryGetValue(ServiceRequestType.ExpertList, out CommandTask<object>? value))
                     value.SetResponse(experts);
             }
         }
@@ -301,7 +301,7 @@ namespace MtClient
 
         private int nextCommandId = 0;
         private readonly Dictionary<int, CommandTask<string>> tasks_ = [];
-        private readonly Dictionary<MtNotificationType, CommandTask<object>> notification_tasks_ = [];
+        private readonly Dictionary<ServiceRequestType, CommandTask<object>> service_requests_ = [];
 
         private readonly IRpcLogger logger_;
     }
